@@ -31,9 +31,10 @@ export default class HomeScreen extends React.Component {
   }
 
   renderPost = ({songName, artistName}, i) => {
-  	console.log("rendiner");
+  	console.log(i);
     return (
       <View
+      	key={i}
         style={styles.post}
       >
         <View style={styles.postContent}>
