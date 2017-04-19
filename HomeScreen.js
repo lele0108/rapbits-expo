@@ -3,9 +3,12 @@ import {
   Text,
   Image,
   View,
-  ActivityIndicator, ScrollView, StyleSheet
+  ActivityIndicator, ListView, StyleSheet
 } from 'react-native';
 import { Router } from './main';
+
+const rowHasChanged = (r1, r2) => r1 !== r2
+const ds = new ListView.DataSource({rowHasChanged});
 
 export default class HomeScreen extends React.Component {
   static route = {
@@ -18,37 +21,35 @@ export default class HomeScreen extends React.Component {
   	loading: true,
   	error: false,
   	rapbits: [],
-  }
+  	dataSource:ds
+  };
+
 
   componentWillMount = async() => {
   	try {
   		const response = await fetch('http://rapbits.com/api/rapbits');
   		const rapbits = await response.json()
   		console.log("load successful");
-  		this.setState({loading: false, rapbits})
+  		this.setState({loading: false, rapbits});
+  		this.setState({dataSource: ds.cloneWithRows(rapbits)});
   	} catch(e) {
   		this.setState({loading: false, error: true})
   	}
   }
-
-  renderPost = ({songName, artistName}, i) => {
-  	console.log(i);
-    return (
-      <View
-      	key={i}
-        style={styles.post}
-      >
-        <View style={styles.postContent}>
-          <Text style={styles.songName}>
-            {songName}
-          </Text>
-          <Text style={styles.artistName}>
-            {artistName}
-          </Text>
-        </View>
-      </View>
-    )
-  }
+  
+  renderRow = (rowData) => {
+    	console.log(rowData);
+	    return (
+		    <View style={styles.postContent}>
+		      <Text style={styles.songName}>
+		        {rowData.songName}
+		      </Text>
+		      <Text style={styles.artistName}>
+	            {rowData.artistName}
+	          </Text>
+	         </View>
+	    )
+  	}
 
   render() {
   	const {rapbits, loading, error} = this.state;
@@ -71,10 +72,13 @@ export default class HomeScreen extends React.Component {
       )
     }
 
+
     return (
-      <ScrollView style={styles.container}>
-        {rapbits.map(this.renderPost)}
-      </ScrollView>
+      <ListView
+        style={styles.container}
+        dataSource={this.state.dataSource}
+        renderRow={this.renderRow}
+      />
     )
   }
 
