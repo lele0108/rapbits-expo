@@ -3,7 +3,7 @@ import {
   Text,
   Image,
   View,
-  ActivityIndicator, ListView, StyleSheet
+  ActivityIndicator, ListView, StyleSheet, TouchableOpacity
 } from 'react-native';
 import { Router } from './main';
 
@@ -24,6 +24,10 @@ export default class HomeScreen extends React.Component {
   	dataSource:ds
   };
 
+  _goToBit = currentBit => () => {
+    this.props.navigator.push('bit', {currentBit});
+};
+
 
   componentWillMount = async() => {
   	try {
@@ -38,17 +42,17 @@ export default class HomeScreen extends React.Component {
   }
 
   renderRow = (rowData) => {
-    	console.log(rowData);
+  	console.log(rowData);
 	    return (
-		    <View style={styles.postContent}>
-		    <Image style={styles.coverPhoto} source={{ uri: rowData.albumCover }} />
+		    <TouchableOpacity onPress={this._goToBit(rowData)} style={styles.postContent}>
+		    	<Image style={styles.coverPhoto} source={{ uri: rowData.albumCover }} />
 		      <Text style={styles.songName}>
 		        {rowData.songName}
 		      </Text>
 		      <Text style={styles.artistName}>
 	            {rowData.artistName}
 	          </Text>
-	         </View>
+	         </TouchableOpacity>
 	    )
   	}
 
