@@ -16,8 +16,13 @@ export default class BitScreen extends React.Component {
     }
   }
 
-  componentDidMount() {
+  async componentDidMount() {
     Audio.setIsEnabledAsync(true);
+    const sound = new Expo.Audio.Sound({
+      source: this.props.route.params.currentBit.mp3Snippet,
+    });
+    await sound.loadAsync();
+    await sound.playAsync();
   }
 
   render() {
