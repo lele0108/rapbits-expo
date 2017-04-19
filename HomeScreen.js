@@ -1,6 +1,7 @@
 import React from 'react';
 import {
   Text,
+  Image,
   View,
   ActivityIndicator, ScrollView, StyleSheet
 } from 'react-native';
@@ -9,7 +10,7 @@ import { Router } from './main';
 export default class HomeScreen extends React.Component {
   static route = {
     navigationBar: {
-      title: 'Home',
+      title: 'RapBits Gallery',
     }
   }
 
@@ -38,10 +39,10 @@ export default class HomeScreen extends React.Component {
         style={styles.post}
       >
         <View style={styles.postContent}>
-          <Text>
+          <Text style={styles.songName}>
             {songName}
           </Text>
-          <Text style={styles.postBody}>
+          <Text style={styles.artistName}>
             {artistName}
           </Text>
         </View>
@@ -55,7 +56,7 @@ export default class HomeScreen extends React.Component {
   	if (loading) {
   		return (
   			<View syle={styles.center}>
-  				<ActivityIndicator animated={true}/>
+  				<ActivityIndicator animated={true} style={styles.activityIndicator}/>
   			</View>
   			)
   	}
@@ -89,25 +90,37 @@ const styles = StyleSheet.create({
   post: {
     flexDirection: 'row',
   },
-  postNumber: {
-    width: 50,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
   postContent: {
     flex: 1,
     borderBottomWidth: 1,
     borderBottomColor: '#EEE',
     paddingVertical: 25,
-    paddingRight: 15,
+    paddingLeft: 15,
   },
-  postBody: {
+  songName: {
+  	marginTop: 10,
+  	fontSize: 15,
+  	color: 'black',
+  },
+  artistName: {
     marginTop: 10,
     fontSize: 12,
-    color: 'lightgray',
+    color: 'lightslategrey',
   },
+  activityIndicator: {
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+      flexDirection: 'column',
+   },
   center: {
     flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  loading: {
+  	flex: 1,
+  	flexDirection: 'column',
     justifyContent: 'center',
     alignItems: 'center',
   },
