@@ -22,6 +22,7 @@ export default class BitScreen extends React.Component {
     loading: true,
     error: false,
     sound: null,
+    status: "Play",
   };
 
   componentDidMount() {
@@ -38,22 +39,29 @@ export default class BitScreen extends React.Component {
       source: this.props.route.params.currentBit.mp3Snippet,
     });
     await sound.loadAsync();
-    sound.setPlaybackFinishedCallback(() => this.state.sound.setPositionAsync(0));
+    sound.setPlaybackFinishedCallback(() => this.loopAudio());
     this.setState({sound, loading: false});
+  }
+
+  loopAudio = async() => {
+    await this.state.sound.setPositionAsync(0);
+    this.setState({status: "Play"});
   }
 
   playAudio = async() => {
     const status = await this.state.sound.getStatusAsync();
     console.log(status);
     if (status.isPlaying) {
+      this.setState({status: "Play"});
       await this.state.sound.pauseAsync();
     } else {
+      this.setState({status: "Pause"});
       await this.state.sound.playAsync();
     }
   }
 
   render() {
-    const {loading, error} = this.state;
+    const {loading, error, status} = this.state;
     const rapbit = this.props.route.params.currentBit;
     if (loading) {
       return (
@@ -70,7 +78,7 @@ export default class BitScreen extends React.Component {
         <Text>{rapbit.artistName}</Text>
         <Button
           onPress={() => this.playAudio()}
-          title="Play"
+          title={status}
           color="#841584"
           accessibilityLabel="Learn more about this purple button"
         />
