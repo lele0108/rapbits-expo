@@ -4,6 +4,7 @@ import {
   Image,
   View,
   Share,
+  TextInput,
   ActivityIndicator, ListView, StyleSheet, TouchableOpacity
 } from 'react-native';
 import { Router } from './main';
@@ -22,7 +23,8 @@ export default class HomeScreen extends React.Component {
   	loading: true,
   	error: false,
   	rapbits: [],
-  	dataSource:ds
+  	dataSource:ds,
+    searchText: "",
   };
 
   _goToBit = currentBit => () => {
@@ -43,7 +45,6 @@ export default class HomeScreen extends React.Component {
   }
 
   renderRow = (rowData) => {
-  	console.log(rowData);
 	    return (
 		    <TouchableOpacity onPress={this._goToBit(rowData)} style={styles.postContent}>
 		      <Image style={styles.coverPhoto} source={{ uri: rowData.albumCover}} />
@@ -55,7 +56,24 @@ export default class HomeScreen extends React.Component {
 	          </Text>
 	         </TouchableOpacity>
 	    )
-  	}
+  }
+
+  setSearchText(event) {
+   let searchText = event.nativeEvent.text;
+   this.setState({searchText});
+   let filteredData = this.filterRap(searchText);
+   this.setState({
+       dataSource: ds.cloneWithRows(filteredData),
+    });
+  }
+
+  filterRap(searchText) {
+    let text = searchText.toLowerCase();
+
+    return this.state.rapbits.filter((n) => 
+      n.lyric.toLowerCase().indexOf(text.toLowerCase()) > -1
+    )
+  }
 
   render() {
   	const {rapbits, loading, error} = this.state;
@@ -79,11 +97,17 @@ export default class HomeScreen extends React.Component {
     }
 
     return (
-      <ListView
+     <View style={styles.container}>
+     <TextInput
+     style={styles.search}
+ value={this.state.searchText}
+ onChange={this.setSearchText.bind(this)}
+ placeholder="Search" />
+	   <ListView
         style={styles.container}
         dataSource={this.state.dataSource}
-        renderRow={this.renderRow}
-      />
+        renderRow={this.renderRow}/>
+        </View>
     )
   }
 }
@@ -138,4 +162,12 @@ const styles = StyleSheet.create({
     padding: 15,
     backgroundColor: 'skyblue',
   },
+  search: {
+    height:40,
+    paddingLeft: 15,
+    paddingTop: 15,
+    marginBottom: 15,
+    borderBottomWidth: 1,
+    borderBottomColor: 'lightslategrey'
+  }
 })

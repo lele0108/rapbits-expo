@@ -24,9 +24,6 @@ export class ShareButton extends React.Component {
       title: 'RapBits'
     }, {
       dialogTitle: 'Check out this new Rap lyric I found: ',
-      excludedActivityTypes: [
-        'com.apple.UIKit.activity.PostToTwitter'
-      ],
       tintColor: 'green'
     })
     .then(this._showResult)
