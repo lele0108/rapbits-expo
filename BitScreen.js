@@ -6,15 +6,20 @@ import {
   Image,
   Button,
   ActivityIndicator,
+  Share,
+  InteractionManager,
 
 } from 'react-native';
 import { Router } from './main';
+import { ShareButton } from './ShareButton';
 import Expo, {Asset, Audio, Font} from 'expo';
 
 export default class BitScreen extends React.Component {
+
   static route = {
     navigationBar: {
       title: 'RapBit',
+      renderRight: (route, props) => <ShareButton/>
     }
   }
 
@@ -25,9 +30,11 @@ export default class BitScreen extends React.Component {
     status: "Play",
   };
 
-  componentDidMount() {
-    Audio.setIsEnabledAsync(true);
-    this.loadAudio();
+  componentDidMount  = async() => {
+    InteractionManager.runAfterInteractions(() => {
+      Audio.setIsEnabledAsync(true);
+      this.loadAudio();
+    });
   }
 
   componentWillUnmount() {
@@ -35,12 +42,14 @@ export default class BitScreen extends React.Component {
   }
 
   loadAudio = async() => {
-    const sound = new Expo.Audio.Sound({
-      source: this.props.route.params.currentBit.mp3Snippet,
-    });
-    await sound.loadAsync();
-    sound.setPlaybackFinishedCallback(() => this.loopAudio());
-    this.setState({sound, loading: false});
+    try {
+      sound = new Audio.Sound({ source: this.props.route.params.currentBit.mp3Snippet });
+      await sound.loadAsync();
+      sound.setPlaybackFinishedCallback(() => this.loopAudio());
+      this.setState({sound, loading: false});
+    } catch(e) {
+      this.setState({loading: false, error: true})
+    }
   }
 
   loopAudio = async() => {
@@ -50,7 +59,6 @@ export default class BitScreen extends React.Component {
 
   playAudio = async() => {
     const status = await this.state.sound.getStatusAsync();
-    console.log(status);
     if (status.isPlaying) {
       this.setState({status: "Play"});
       await this.state.sound.pauseAsync();
@@ -74,29 +82,43 @@ export default class BitScreen extends React.Component {
     return (
         <View style={{alignItems: 'center', justifyContent: 'center', flex: 1}}>
         <Image style={styles.coverPhoto} source={{ uri: rapbit.albumCover }} />
-        <Text>{rapbit.lyric}</Text>
-        <Text>{rapbit.artistName}</Text>
+        <Text style={styles.lyricText}>{rapbit.lyric}</Text>
+        <Text style={styles.artistText}>{rapbit.artistName}</Text>
         <Button
           onPress={() => this.playAudio()}
           title={status}
           color="#841584"
-          accessibilityLabel="Learn more about this purple button"
+          style={styles.playButton}
         />
+        
       </View>
     )
-  }
-
-  _handlePress = () => {
-    this.props.navigator.push('home');
   }
 }
 
 const styles = StyleSheet.create({
   coverPhoto: {
-    width: 75,
-    height: 75,
-    marginBottom: 50,
+    width: 200,
+    height: 200,
+    marginBottom: 30,
     justifyContent: 'center',
     alignItems: 'center',
   },
+  lyricText: {
+    paddingRight: 20,
+    paddingLeft: 20,
+    fontSize: 18,
+    color: 'black',
+    marginBottom: 5,
+    textAlign: 'center',
+  },
+  artistText: {
+    fontSize: 14,
+    color: 'lightslategrey',
+    marginBottom: 15,
+  },
+  playButton: {
+    marginTop: 20,
+    fontSize:25,
+  }
 });

@@ -3,11 +3,12 @@ import {
   Text,
   Image,
   View,
+  Share,
   ActivityIndicator, ListView, StyleSheet, TouchableOpacity
 } from 'react-native';
 import { Router } from './main';
 
-const rowHasChanged = (r1, r2) => r1 !== r2
+const rowHasChanged = (r1, r2) => r1.lyric !== r2.lyric
 const ds = new ListView.DataSource({rowHasChanged});
 
 export default class HomeScreen extends React.Component {
@@ -45,9 +46,9 @@ export default class HomeScreen extends React.Component {
   	console.log(rowData);
 	    return (
 		    <TouchableOpacity onPress={this._goToBit(rowData)} style={styles.postContent}>
-		    	<Image style={styles.coverPhoto} source={{ uri: rowData.albumCover }} />
+		      <Image style={styles.coverPhoto} source={{ uri: rowData.albumCover}} />
 		      <Text style={styles.songName}>
-		        {rowData.songName}
+		        {rowData.lyric}
 		      </Text>
 		      <Text style={styles.artistName}>
 	            {rowData.artistName}
@@ -77,7 +78,6 @@ export default class HomeScreen extends React.Component {
       )
     }
 
-
     return (
       <ListView
         style={styles.container}
@@ -85,10 +85,6 @@ export default class HomeScreen extends React.Component {
         renderRow={this.renderRow}
       />
     )
-  }
-
-  _handlePress = () => {
-    this.props.navigator.push('home');
   }
 }
 
@@ -102,8 +98,6 @@ const styles = StyleSheet.create({
   coverPhoto: {
   	width: 75,
   	height: 75,
-  	justifyContent: 'center',
-  	alignItems: 'center',
   },
   postContent: {
     flex: 1,
@@ -118,7 +112,7 @@ const styles = StyleSheet.create({
   	color: 'black',
   },
   artistName: {
-    marginTop: 10,
+    marginTop: 5,
     fontSize: 12,
     color: 'lightslategrey',
   },
@@ -127,6 +121,7 @@ const styles = StyleSheet.create({
       justifyContent: 'center',
       alignItems: 'center',
       flexDirection: 'column',
+      height:80,
    },
   center: {
     flex: 1,
