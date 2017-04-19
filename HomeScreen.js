@@ -36,11 +36,12 @@ export default class HomeScreen extends React.Component {
   		this.setState({loading: false, error: true})
   	}
   }
-  
+
   renderRow = (rowData) => {
     	console.log(rowData);
 	    return (
 		    <View style={styles.postContent}>
+		    <Image style={styles.coverPhoto} source={{ uri: rowData.albumCover }} />
 		      <Text style={styles.songName}>
 		        {rowData.songName}
 		      </Text>
@@ -93,6 +94,12 @@ const styles = StyleSheet.create({
   },
   post: {
     flexDirection: 'row',
+  },
+  coverPhoto: {
+  	width: 75,
+  	height: 75,
+  	justifyContent: 'center',
+  	alignItems: 'center',
   },
   postContent: {
     flex: 1,
