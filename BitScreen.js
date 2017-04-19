@@ -4,6 +4,9 @@ import {
   View,
   StyleSheet,
   Image,
+  Button,
+  ActivityIndicator,
+
 } from 'react-native';
 import { Router } from './main';
 import Expo, {Asset, Audio, Font} from 'expo';
@@ -11,10 +14,7 @@ import Expo, {Asset, Audio, Font} from 'expo';
 export default class BitScreen extends React.Component {
   static route = {
     navigationBar: {
-      title: 'Home',
-      title(params) {
-        return `Greeting for ${params.cover}`;
-      },
+      title: 'RapBit',
     }
   }
 
@@ -38,17 +38,42 @@ export default class BitScreen extends React.Component {
       source: this.props.route.params.currentBit.mp3Snippet,
     });
     await sound.loadAsync();
-    await sound.playAsync();
-    this.setState({sound});
+    sound.setPlaybackFinishedCallback(() => this.state.sound.setPositionAsync(0));
+    this.setState({sound, loading: false});
+  }
+
+  playAudio = async() => {
+    const status = await this.state.sound.getStatusAsync();
+    console.log(status);
+    if (status.isPlaying) {
+      await this.state.sound.pauseAsync();
+    } else {
+      await this.state.sound.playAsync();
+    }
   }
 
   render() {
+    const {loading, error} = this.state;
     const rapbit = this.props.route.params.currentBit;
+    if (loading) {
+      return (
+        <View syle={styles.center}>
+          <ActivityIndicator animated={true} style={styles.activityIndicator}/>
+        </View>
+        )
+    }
+
     return (
-      <View style={{alignItems: 'center', justifyContent: 'center', flex: 1}}>
+        <View style={{alignItems: 'center', justifyContent: 'center', flex: 1}}>
         <Image style={styles.coverPhoto} source={{ uri: rapbit.albumCover }} />
         <Text>{rapbit.lyric}</Text>
         <Text>{rapbit.artistName}</Text>
+        <Button
+          onPress={() => this.playAudio()}
+          title="Play"
+          color="#841584"
+          accessibilityLabel="Learn more about this purple button"
+        />
       </View>
     )
   }
